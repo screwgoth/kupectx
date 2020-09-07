@@ -18,6 +18,15 @@ class Kupectx(object):
         self.main()
 
     def main(self):
+        defaultPath = os.path.expanduser(DEFAULT_KUBECONFIG)
+        stream = open(defaultPath, "r")
+        self.kubeConfig = yaml.safe_load(stream)
+        self.numContexts = len(self.kubeConfig['contexts'])
+        self.numClusters = len(self.kubeConfig['clusters'])
+        self.numUsers = len(self.kubeConfig['users'])
+        print("No. of Contexts = ", self.numContexts)
+        print("No. of Clusters = ", self.numClusters)
+        print("No. of Users = ", self.numUsers)
         if self.args.list:
             self.list_contexts()
         if self.args.delete:
@@ -25,15 +34,19 @@ class Kupectx(object):
             print("Deleting context", deleteContext)
         else:
             self.list_contexts()
+        stream.close()
     
     def list_contexts(self):
         """
         List existing contexts
         """
-        print("Showing list of contexts")
-        defaultPath = os.path.expanduser(DEFAULT_KUBECONFIG)
-        with open(defaultPath) as stream:
-            #print (yaml.dump(yaml.safe_load(stream)))
-            my_dict = yaml.safe_load(stream)
-            print(my_dict['current-context'])
+
+        for ctx in range(0,self.numContexts):
+            print("Context:", self.kubeConfig['contexts'][ctx]['name'])
+            print(" Cluster:", self.kubeConfig['contexts'][ctx]['context']['cluster'])
+            print(" User:", self.kubeConfig['contexts'][ctx]['context']['user'])
+
+        # for clus in range(0, self.numClusters):
+        #     print("Clusters:", self.kubeConfig['clusters'][clus]['name'])
+
         sys.exit(0)
