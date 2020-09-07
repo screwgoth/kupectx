@@ -1,0 +1,1 @@
+DEFAULT_KUBECONFIG="~/.kube/config"
